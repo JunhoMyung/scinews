@@ -155,7 +155,7 @@ function Main() {
   };
 
 
-  const socket = io.connect('http://localhost:8080')
+  const socket = io.connect('http://ec2-13-125-251-246.ap-northeast-2.compute.amazonaws.com:8080')
 
   const theme = createTheme({
     status: {
