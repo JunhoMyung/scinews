@@ -33,7 +33,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-function Main() {
+function Main(props) {
 
   const [article, setArticle] = useState({title:'', author:'', publish_date:'', image:'', text:''})
   const [load, setLoad] = useState(false)
@@ -46,7 +46,7 @@ function Main() {
 
   const handlefilter = (event) => {
     setFilter(event.target.value)
-    var newdata = [... myData]
+    var newdata = [...myData]
     for (let i = 0; i < newdata.length; i++){
       newdata[i]["stroke"] = "white";
     }
@@ -57,7 +57,7 @@ function Main() {
 
   const handlegenderselect = (event, newAlignment) => {
     setgenderselect(newAlignment);
-    var newdata = [... myData]
+    var newdata = [...myData]
 
     if (newAlignment === null || newAlignment === "general"){
       for (let i = 0; i < newdata.length; i++){
@@ -81,7 +81,7 @@ function Main() {
   const [slider, setSlider] = useState(10);
   const handleSlider = (event) => {
     setSlider(event.target.value);
-    var newdata = [... myData]
+    var newdata = [...myData]
 
     var target = "senior"
     if (event.target.value === 10){
@@ -316,31 +316,31 @@ function Main() {
   }
   
   const setNewTitle = (e) => {
-    var temp = {... newarticle}
+    var temp = {...newarticle}
     temp["article"]["title"] = e.target.value
     setNewarticle(temp)
   }
 
   const setNewAuthors = (e) => {
-    var temp = {... newarticle}
+    var temp = {...newarticle}
     temp["article"]["authors"] = e.target.value
     setNewarticle(temp)
   }
 
   const setNewPublishDate = (e) => {
-    var temp = {... newarticle}
+    var temp = {...newarticle}
     temp["article"]["publish_date"] = e.target.value
     setNewarticle(temp)
   }
 
   const setNewText = (e) => {
-    var temp = {... newarticle}
+    var temp = {...newarticle}
     temp["article"]["text"] = e.target.value
     setNewarticle(temp)
   }
 
   const setNewDosage = (e) => {
-    var temp = {... newarticle}
+    var temp = {...newarticle}
     temp["qa"]["dosage"] = e.target.value
     setNewarticle(temp)
   }
@@ -374,19 +374,19 @@ function Main() {
   }
 
   const handleEffect = (v, e) => {
-    var temp = {... effect}
+    var temp = {...effect}
     temp[v] = e.target.value
     setEffect(temp)
   }
   
   const removeEffect = (v) => {
-    var temp = {... effect}
+    var temp = {...effect}
     delete temp[v]
     setEffect(temp)
   }
 
   const addEffect = () => {
-    var temp = {... effect}
+    var temp = {...effect}
     temp[(Math.random() + 1).toString(36).substring(7)] = ""
     setEffect(temp)
   }
@@ -438,7 +438,7 @@ function Main() {
     }
 
     const hovertarget = () => {
-      if (datum["data"]["age"] != "none" && datum["data"]["gender"] != "none"){
+      if (datum["data"]["age"] !== "none" && datum["data"]["gender"] !== "none"){
         return (
           <>
             Target age: <b>{datum["data"]["age"].charAt(0).toUpperCase() + datum["data"]["age"].slice(1)}</b>
@@ -447,14 +447,14 @@ function Main() {
           </>
         )
       }
-      else if (datum["data"]["age"] != "none"){
+      else if (datum["data"]["age"] !== "none"){
         return (
           <>
             Target age: <b>{datum["data"]["age"].charAt(0).toUpperCase() + datum["data"]["age"].slice(1)}</b>
           </>
         )
       }
-      else if (datum["data"]["gender"] != "none"){
+      else if (datum["data"]["gender"] !== "none"){
         return (
           <>
             Target gender: <b>{datum["data"]["gender"].charAt(0).toUpperCase() + datum["data"]["gender"].slice(1)}</b>
@@ -745,9 +745,10 @@ function Main() {
   }
 
   return (
-    <div>
+    <div className="total">
       <div className="Navbar">
         <img src="/logo.png" alt="logo" className="Logo"/>
+        <Button variant="outlined" sx={{ ml: "73%", mt:"15px", width: "200px", padding: "10px", height: "50px", position:"absolute"}} onClick={props.handleNext}>Move to Next Stage</Button>
       </div>
       <div className="Body">
         <div className="Main">

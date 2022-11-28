@@ -7,7 +7,10 @@ body {
 .Navbar {
   top: 0;
   height: 80px;
+  width: 100%;
   border-bottom: 1.5px solid gray;
+  position: fixed;
+  background-color: white;
 }
 
 .Logo {
@@ -18,9 +21,11 @@ body {
 
 .Body {
   position: absolute;
+  margin-top: 79px;
   width: 100%;
   z-index: -1;
   background-color: #e9ecef;
+  min-height: calc(100vh - 81px);
 }
 
 .Main {
@@ -236,4 +241,32 @@ path{
 
 .victorychart{
   margin-top: -170px;
+}
+
+.surveyQuestion{
+  margin-top: 30px;
+  margin-bottom: 15px;
+  font-size: 14pt;
+}
+.total{
+  height: 100%;
+}
+.DismissMain {
+  width: 54%;
+  margin-top: 15%;
+  margin-left: 20%;
+  padding-left: 2%;
+  margin-right: 20%;
+  padding-right: 2%;
+  padding-top: 30px;
+  min-height: 10%;
+  background-color: white;
+  border: 1px solid #e8ebee;
+  border-radius: 6px;
+  box-shadow: 0 1px 1px 0 rgb(0 0 0 / 3%);
+}
+.surveycode{
+  margin-top: 40px;
+  font-size: 14pt;
+  margin-bottom: 40px;
 }
