@@ -98,13 +98,12 @@ def main(link):
         print("error")
         return
     
-    # result["classify"] = gender_age(article["title"].lower())
+    result["classify"] = gender_age(article["title"].lower())
     result["sentiment"] = sentiment(article["title"])
-    # result["qa"] = qa(article["text"], result["sentiment"])
+    result["qa"] = qa(article["text"], result["sentiment"])
     print(json.dumps(result))
 
-main ("https://www.chroniclelive.co.uk/news/health/warning-drinking-coffee-before-breakfast-25592838")
 
-# if __name__ == '__main__':
-#     main(sys.argv[1])
+if __name__ == '__main__':
+    main(sys.argv[1])
 

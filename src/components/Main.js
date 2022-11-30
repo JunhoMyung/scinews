@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
 import { db } from './firebase';
-import { VictoryTooltip, VictoryScatter, VictoryVoronoiContainer } from 'victory';
+import { VictoryTooltip, VictoryScatter, VictoryVoronoiContainer, VictoryChart, VictoryAxis, VictoryTheme, VictoryPie } from 'victory';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
@@ -32,6 +32,8 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import CloseIcon from '@mui/icons-material/Close';
 
 function Main(props) {
 
@@ -42,15 +44,29 @@ function Main(props) {
   const [newarticle, setNewarticle] = useState({})
   const [effect, setEffect] = useState({})
   const [genderselect, setgenderselect] = useState('general');
-  const [filter, setFilter] = useState('age')
+  const [filter, setFilter] = useState('age');
+  const [pie, setPie] = useState([{x: "Positive", y: 13}, {x: "Negative", y: 8}, , {x: "Neutral", y: 20}])
 
   const handlefilter = (event) => {
     setFilter(event.target.value)
     var newdata = [...myData]
+    var positive = 0
+    var negative = 0
+    var neutral = 0
     for (let i = 0; i < newdata.length; i++){
       newdata[i]["stroke"] = "white";
+      if (newdata[i]["data"]["sentiment"] > 3){
+        positive ++
+      }
+      else if (newdata[i]["data"]["sentiment"] === "3"){
+        neutral ++
+      }
+      else {
+        negative ++
+      }
     }
     setmyData(newdata)
+    setPie([{x: "Positive", y: positive}, {x: "Negative", y: negative}, , {x: "Neutral", y: neutral}])
     setSlider(10)
     setgenderselect("general")
   }
@@ -58,16 +74,37 @@ function Main(props) {
   const handlegenderselect = (event, newAlignment) => {
     setgenderselect(newAlignment);
     var newdata = [...myData]
+    var positive = 0
+    var negative = 0
+    var neutral = 0
 
     if (newAlignment === null || newAlignment === "general"){
       for (let i = 0; i < newdata.length; i++){
         newdata[i]["stroke"] = "white";
+        if (newdata[i]["data"]["sentiment"] > 3){
+          positive ++
+        }
+        else if (newdata[i]["data"]["sentiment"] === "3"){
+          neutral ++
+        }
+        else {
+          negative ++
+        }
       }
     }
     else {
       for (let i = 0; i < newdata.length; i++){
         if (newdata[i]["data"]["gender"] === newAlignment || newdata[i]["data"]["gender"] === "none"){
           newdata[i]["stroke"] = "#FFF192";
+          if (newdata[i]["data"]["sentiment"] > 3){
+            positive ++
+          }
+          else if (newdata[i]["data"]["sentiment"] === "3"){
+            neutral ++
+          }
+          else {
+            negative ++
+          }
         }
         else {
           newdata[i]["stroke"] = "white";
@@ -75,6 +112,7 @@ function Main(props) {
       }
     }
     setmyData(newdata)
+    setPie([{x: "Positive", y: positive}, {x: "Negative", y: negative}, , {x: "Neutral", y: neutral}])
   };
 
   const [open, setOpen] = useState(false);
@@ -82,6 +120,9 @@ function Main(props) {
   const handleSlider = (event) => {
     setSlider(event.target.value);
     var newdata = [...myData]
+    var positive = 0
+    var negative = 0
+    var neutral = 0
 
     var target = "senior"
     if (event.target.value === 10){
@@ -97,12 +138,30 @@ function Main(props) {
     if (target === "general"){
       for (let i = 0; i < newdata.length; i++){
         newdata[i]["stroke"] = "white";
+        if (newdata[i]["data"]["sentiment"] > 3){
+          positive ++
+        }
+        else if (newdata[i]["data"]["sentiment"] === "3"){
+          neutral ++
+        }
+        else {
+          negative ++
+        }
       }
     }
     else if (target === "adult"){
       for (let i = 0; i < newdata.length; i++){
         if (newdata[i]["data"]["age"] === target || newdata[i]["data"]["age"] === "none"){
           newdata[i]["stroke"] = "#FFF192";
+          if (newdata[i]["data"]["sentiment"] > 3){
+            positive ++
+          }
+          else if (newdata[i]["data"]["sentiment"] === "3"){
+            neutral ++
+          }
+          else {
+            negative ++
+          }
         }
         else {
           newdata[i]["stroke"] = "white";
@@ -113,15 +172,31 @@ function Main(props) {
       for (let i = 0; i < newdata.length; i++){
         if (newdata[i]["data"]["age"] === target){
           newdata[i]["stroke"] = "#FFF192";
+          if (newdata[i]["data"]["sentiment"] > 3){
+            positive ++
+          }
+          else if (newdata[i]["data"]["sentiment"] === "3"){
+            neutral ++
+          }
+          else {
+            negative ++
+          }
         }
         else {
           newdata[i]["stroke"] = "white";
         }
       }
     }
-
+    console.log(positive, negative, neutral)
+    setPie([{x: "Positive", y: positive}, {x: "Negative", y: negative}, , {x: "Neutral", y: neutral}])
     setmyData(newdata)
   };
+
+  const [view, setView] = useState(false);
+  const openView = () => setView(true);
+  const handleCloseView = () => {
+    setView(false)
+  }
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -155,7 +230,7 @@ function Main(props) {
   };
 
 
-  const socket = io.connect('http://127.0.0.1:8080')
+  // const socket = io.connect('http://127.0.0.1:8080')
 
   const theme = createTheme({
     status: {
@@ -208,6 +283,19 @@ function Main(props) {
     p: 4,
   };
 
+  const style4 = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '60%',
+    height: '85%',
+    bgcolor: 'background.paper',
+    border: '1px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+
   const btnstyle= {
     position: "absolute",
     left: "40%",
@@ -243,38 +331,51 @@ function Main(props) {
   ];
 
   useEffect(()=>{
-    socket.on("article", (text) => {
-      try{
-        console.log(text)
-        let userObj = JSON.parse(text);
-        setNewarticle(userObj)
-        setRecommend("edit")
-        getLikertDefault(userObj)
-        getEffects(userObj)
-      } 
-      catch (error) {
-        setRecommend("error")
-      }
-    })
+    // socket.on("article", (text) => {
+    //   try{
+    //     console.log(text)
+    //     let userObj = JSON.parse(text);
+    //     setNewarticle(userObj)
+    //     setRecommend("edit")
+    //     getLikertDefault(userObj)
+    //     getEffects(userObj)
+    //   } 
+    //   catch (error) {
+    //     setRecommend("error")
+    //   }
+    // })
 
     if (!load){
-      db.ref('/Coffee/-NHjZrijEF3VbL-LCpnP/').get().then((snapshot) => {
-        const json = snapshot.val()["article"]
-        setArticle({title: json["title"], author: json["authors"], publish_date: json["publish_date"], image: json["image"], text: json["text"]})
-      })
       getGraph()
       setLoad(true)
     }
-  },[socket])
+  // },[socket])
+  },[])
 
   const getGraph = () => {
     var temp = []
+    var positive = 0
+    var negative = 0
+    var neutral = 0
     db.ref('/Coffee/').get().then((snapshot) => {
       const json = snapshot.val()
       for (const i of Object.keys(json)){
         const data = json[i]
-        const x = Math.floor(Math.random() * (50))
-        const y = Math.floor(Math.random() * (50))
+        const dose = data["dosage"]
+        var x = 0
+        if (dose.length > 3){
+          x = Math.random()
+        }
+        else if (dose.length === 3){
+          const low = parseInt(dose[0])
+          const high = parseInt(dose[2])
+          x = Math.random() + Math.floor((low + high) / 2)
+        }
+        else {
+          x = parseInt(dose[0]) + Math.random()
+        }
+
+        const y = Math.floor(Math.random() * (-40) - 10) 
 
         var color = "#6a6a6a"
         if (data["sentiment"] === "1"){
@@ -293,8 +394,19 @@ function Main(props) {
           color = "#5DADEC"
         }
         temp.push({ x: x, y: y, fill: color, data: data, stroke: "white"})
+
+        if (data["sentiment"] > 3){
+          positive ++
+        }
+        else if (data["sentiment"] === "3"){
+          neutral ++
+        }
+        else {
+          negative ++
+        }
       }
       setmyData(temp)
+      setPie([{x: "Positive", y: positive}, {x: "Negative", y: negative}, , {x: "Neutral", y: neutral}])
     })
   }
 
@@ -310,10 +422,10 @@ function Main(props) {
     setEffect(result)
   }
 
-  const onlink = () => {
-    socket.emit('request', link)
-    setRecommend("loading")
-  }
+  // const onlink = () => {
+  //   socket.emit('request', link)
+  //   setRecommend("loading")
+  // }
   
   const setNewTitle = (e) => {
     var temp = {...newarticle}
@@ -412,14 +524,17 @@ function Main(props) {
 
   const VictoryCustomTooltip = (props) => {
     const { datum, x, y } = props;
-    var new_x = x + 20;
+    var new_x = x + 10;
     var new_y = y;
   
-    if (x > 220){
-      new_x = x - 220;
+    if (x > 200){
+      new_x = x - 200;
     }
-    if (x > 240){
-      new_x = x - 240;
+    if (x > 220){
+      new_x = x - 210;
+    }
+    if (x > 230){
+      new_x = x - 210;
     }
     if (y > 50){
       new_y = y - 50;
@@ -465,6 +580,30 @@ function Main(props) {
         return(<></>)
       }
     }
+
+    const getDosage = () => {
+      if (datum["data"]["dosage"].length === 1){
+        return(
+          <>
+            {datum["data"]["dosage"]} cup a day
+          </>
+        )
+      }
+      else if (datum["data"]["dosage"].length === 3){
+        return(
+          <>
+            {datum["data"]["dosage"][0]} ~ {datum["data"]["dosage"][2]} cups a day
+          </>
+        )
+      }
+      else {
+        return(
+          <>
+            {datum["data"]["dosage"]}
+          </>
+        )
+      }
+    }
   
     return (
       <g style={{ pointerEvents: "none" }}>
@@ -484,7 +623,7 @@ function Main(props) {
               {hovertarget()}
             </div>
             <div className="hoverdosage">
-              Dosage: <b>{datum["data"]["dosage"]}</b>
+              Dosage: <b>{getDosage()}</b>
             </div>
             <div className="hovereffect">
               Effect:
@@ -503,7 +642,7 @@ function Main(props) {
   };
   
   const onSubmit = () => {
-    const result = {"article": newarticle["article"], "effects": effect, "age": age, "gender": gender, "sentiment": likert, "dosage": newarticle["dosage"]}
+    const result = {"article": newarticle["article"], "effects": effect, "age": age, "gender": gender, "sentiment": likert, "dosage": newarticle["qa"]["dosage"]}
     db.ref('/Coffee/').push(result)
 
     setRecommend("link")
@@ -516,364 +655,414 @@ function Main(props) {
     setGender("male")
   }
 
-  const renderModal = () => {
-    if (recommend === "link"){
-      return(
-        <Box sx={style1}>
-          <div className="modalTitle">
-            Please recommend a health news related to "Coffee"
-          </div>
-          <TextField fullWidth 
-            label="Link" 
-            id="fullWidth" 
-            placeholder="Paste the link of the news here."
-            value={link}
-            onChange={handleChange}
-          />
-          <Button variant="outlined" sx={btnstyle} onClick={onlink}>Submit</Button>
-        </Box>
-      )
-    }
-    else if (recommend === "loading"){
-      return(
-        <Box sx={style2}>
-          <Oval
-            width="28%"
-            height="28%"
-            color="#3944BC"
-            strokeWidth={3}
-            secondaryColor='#0492C2'
-            ariaLabel="grid-loading"
-            wrapperClass="load"
-            visible={true}
-          />
-          <div className="loadlabel">
-            Processing...
-          </div>
-        </Box>
-      )
-    }
-    else if (recommend === "edit") {
-      return(
-        <Box sx={style3}>
-          <Grid container spacing={0} sx={{height: "100%"}}>
-            <Grid item xs={5}>
-              <div className="gridLeft">
-                <div className="gridTitle">
-                  Please Help Correcting the Details!
-                </div>
-                <Accordion sx = {accordianstyle}>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                    sx = {{ fontSize: "13pt", bgcolor: "#f4f4f5" }}
-                  >
-                    Change Article Info
-                  </AccordionSummary>
-                  <AccordionDetails sx = {{ borderTop: "1px solid gray" }}>
-                    <div className="gridSubtitle">
-                      Title:
-                    </div>
-                    <input
-                      className="gridInputText"
-                      value={newarticle["article"]["title"]}
-                      onChange={setNewTitle}
-                    />
-                    <div className="gridSubtitle">
-                      Author:
-                    </div>
-                    <input
-                      className="gridInputText"
-                      value={newarticle["article"]["authors"]}
-                      onChange={setNewAuthors}
-                    />
-                    <div className="gridSubtitle">
-                      Publish Date:
-                    </div>
-                    <input
-                      className="gridInputText"
-                      value={newarticle["article"]["publish_date"]}
-                      onChange={setNewPublishDate}
-                    />
-                    <div className="gridSubtitle">
-                      Text:
-                    </div>
-                    <textarea 
-                      className="gridTextField"
-                      value={newarticle["article"]["text"]}
-                      onChange={setNewText}
-                    />
-                  </AccordionDetails>
-                </Accordion>
-                <Accordion sx = {accordianstyle}>
-                  <AccordionSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      aria-controls="panel1a-content"
-                      id="panel1a-header"
-                      sx = {{ fontSize: "13pt", bgcolor: "#f4f4f5" }}
-                    >
-                      Add Article Detail
-                    </AccordionSummary>
-                    <AccordionDetails sx = {{ borderTop: "1px solid gray" }}>
-                      <div className="description">
-                        Note: The data below are from AI suggestion, which may not be accurate. Please make modifications to better fit the article.
-                      </div>
-                      <div className="gridSubtitle">
-                        Sentiment:
-                      </div>
-                      <div>
-                        <FormControl sx={{ mt:"15px", width:"100%", mb:"15px" }}>
-                          <RadioGroup
-                            aria-labelledby="radio-buttons-group-label"
-                            name="radio-buttons-group"
-                            row
-                            value={likert}
-                            onChange={handleLikert}
-                          >
-                            <FormControlLabel value="1" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Negative" labelPlacement="bottom" sx={{ width:"11%" }}/>
-                            <FormControlLabel value="2" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="" labelPlacement="bottom" sx={{ width:"11%" }}/>
-                            <FormControlLabel value="3" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Neutral" labelPlacement="bottom" sx={{ width:"11%" }}/>
-                            <FormControlLabel value="4" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="" labelPlacement="bottom" sx={{ width:"11%" }}/>
-                            <FormControlLabel value="5" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Positive" labelPlacement="bottom" sx={{ width:"11%" }}/>
-                          </RadioGroup>
-                        </FormControl>
-                      </div>
-                      <div className="gridSubtitle">
-                        Target Age Group:
-                      </div>
-                      <FormControl sx={{ mt:"15px", width:"100%", mb:"15px" }}>
-                        <RadioGroup
-                          aria-labelledby="radio-buttons-group-label"
-                          name="radio-buttons-group"
-                          row
-                          value={age}
-                          onChange={handleAge}
-                        >
-                          <FormControlLabel value="child" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Child" labelPlacement="bottom" sx={{ width:"11%" }}/>
-                          <FormControlLabel value="adult" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Adult" labelPlacement="bottom" sx={{ width:"11%" }}/>
-                          <FormControlLabel value="senior" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Senior" labelPlacement="bottom" sx={{ width:"11%" }}/>
-                          <FormControlLabel value="none" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="None" labelPlacement="bottom" sx={{ width:"11%" }}/>
-                        </RadioGroup>
-                      </FormControl>
+  // const renderModal = () => {
+  //   if (recommend === "link"){
+  //     return(
+  //       <Box sx={style1}>
+  //         <div className="modalTitle">
+  //           Please recommend a health news related to "Coffee"
+  //         </div>
+  //         <TextField fullWidth 
+  //           label="Link" 
+  //           id="fullWidth" 
+  //           placeholder="Paste the link of the news here."
+  //           value={link}
+  //           onChange={handleChange}
+  //         />
+  //         <Button variant="outlined" sx={btnstyle} onClick={onlink}>Submit</Button>
+  //       </Box>
+  //     )
+  //   }
+  //   else if (recommend === "loading"){
+  //     return(
+  //       <Box sx={style2}>
+  //         <Oval
+  //           width="28%"
+  //           height="28%"
+  //           color="#3944BC"
+  //           strokeWidth={3}
+  //           secondaryColor='#0492C2'
+  //           ariaLabel="grid-loading"
+  //           wrapperClass="load"
+  //           visible={true}
+  //         />
+  //         <div className="loadlabel">
+  //           Processing...
+  //         </div>
+  //       </Box>
+  //     )
+  //   }
+  //   else if (recommend === "edit") {
+  //     return(
+  //       <Box sx={style3}>
+  //         <Grid container spacing={0} sx={{height: "100%"}}>
+  //           <Grid item xs={5}>
+  //             <div className="gridLeft">
+  //               <div className="gridTitle">
+  //                 Please Help Correcting the Details!
+  //               </div>
+  //               <Accordion sx = {accordianstyle}>
+  //                 <AccordionSummary
+  //                   expandIcon={<ExpandMoreIcon />}
+  //                   aria-controls="panel1a-content"
+  //                   id="panel1a-header"
+  //                   sx = {{ fontSize: "13pt", bgcolor: "#f4f4f5" }}
+  //                 >
+  //                   Change Article Info
+  //                 </AccordionSummary>
+  //                 <AccordionDetails sx = {{ borderTop: "1px solid gray" }}>
+  //                   <div className="gridSubtitle">
+  //                     Title:
+  //                   </div>
+  //                   <input
+  //                     className="gridInputText"
+  //                     value={newarticle["article"]["title"]}
+  //                     onChange={setNewTitle}
+  //                   />
+  //                   <div className="gridSubtitle">
+  //                     Author:
+  //                   </div>
+  //                   <input
+  //                     className="gridInputText"
+  //                     value={newarticle["article"]["authors"]}
+  //                     onChange={setNewAuthors}
+  //                   />
+  //                   <div className="gridSubtitle">
+  //                     Publish Date:
+  //                   </div>
+  //                   <input
+  //                     className="gridInputText"
+  //                     value={newarticle["article"]["publish_date"]}
+  //                     onChange={setNewPublishDate}
+  //                   />
+  //                   <div className="gridSubtitle">
+  //                     Text:
+  //                   </div>
+  //                   <textarea 
+  //                     className="gridTextField"
+  //                     value={newarticle["article"]["text"]}
+  //                     onChange={setNewText}
+  //                   />
+  //                 </AccordionDetails>
+  //               </Accordion>
+  //               <Accordion sx = {accordianstyle}>
+  //                 <AccordionSummary
+  //                     expandIcon={<ExpandMoreIcon />}
+  //                     aria-controls="panel1a-content"
+  //                     id="panel1a-header"
+  //                     sx = {{ fontSize: "13pt", bgcolor: "#f4f4f5" }}
+  //                   >
+  //                     Add Article Detail
+  //                   </AccordionSummary>
+  //                   <AccordionDetails sx = {{ borderTop: "1px solid gray" }}>
+  //                     <div className="description">
+  //                       Note: The data below are from AI suggestion, which may not be accurate. Please make modifications to better fit the article.
+  //                     </div>
+  //                     <div className="gridSubtitle">
+  //                       Sentiment:
+  //                     </div>
+  //                     <div>
+  //                       <FormControl sx={{ mt:"15px", width:"100%", mb:"15px" }}>
+  //                         <RadioGroup
+  //                           aria-labelledby="radio-buttons-group-label"
+  //                           name="radio-buttons-group"
+  //                           row
+  //                           value={likert}
+  //                           onChange={handleLikert}
+  //                         >
+  //                           <FormControlLabel value="1" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Negative" labelPlacement="bottom" sx={{ width:"11%" }}/>
+  //                           <FormControlLabel value="2" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="" labelPlacement="bottom" sx={{ width:"11%" }}/>
+  //                           <FormControlLabel value="3" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Neutral" labelPlacement="bottom" sx={{ width:"11%" }}/>
+  //                           <FormControlLabel value="4" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="" labelPlacement="bottom" sx={{ width:"11%" }}/>
+  //                           <FormControlLabel value="5" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Positive" labelPlacement="bottom" sx={{ width:"11%" }}/>
+  //                         </RadioGroup>
+  //                       </FormControl>
+  //                     </div>
+  //                     <div className="gridSubtitle">
+  //                       Target Age Group:
+  //                     </div>
+  //                     <FormControl sx={{ mt:"15px", width:"100%", mb:"15px" }}>
+  //                       <RadioGroup
+  //                         aria-labelledby="radio-buttons-group-label"
+  //                         name="radio-buttons-group"
+  //                         row
+  //                         value={age}
+  //                         onChange={handleAge}
+  //                       >
+  //                         <FormControlLabel value="child" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Child" labelPlacement="bottom" sx={{ width:"11%" }}/>
+  //                         <FormControlLabel value="adult" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Adult" labelPlacement="bottom" sx={{ width:"11%" }}/>
+  //                         <FormControlLabel value="senior" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Senior" labelPlacement="bottom" sx={{ width:"11%" }}/>
+  //                         <FormControlLabel value="none" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="None" labelPlacement="bottom" sx={{ width:"11%" }}/>
+  //                       </RadioGroup>
+  //                     </FormControl>
 
-                      <div className="gridSubtitle">
-                        Target Gender:
-                      </div>
-                      <FormControl sx={{ mt:"15px", width:"100%", mb:"15px" }}>
-                          <RadioGroup
-                            aria-labelledby="radio-buttons-group-label"
-                            name="radio-buttons-group"
-                            row
-                            value={gender}
-                            onChange={handleGender}
-                          >
-                            <FormControlLabel value="male" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Male" labelPlacement="bottom" sx={{ width:"11%" }}/>
-                            <FormControlLabel value="female" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Female" labelPlacement="bottom" sx={{ width:"11%" }}/>
-                            <FormControlLabel value="none" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="None" labelPlacement="bottom" sx={{ width:"11%" }}/>
-                          </RadioGroup>
-                        </FormControl>
+  //                     <div className="gridSubtitle">
+  //                       Target Gender:
+  //                     </div>
+  //                     <FormControl sx={{ mt:"15px", width:"100%", mb:"15px" }}>
+  //                         <RadioGroup
+  //                           aria-labelledby="radio-buttons-group-label"
+  //                           name="radio-buttons-group"
+  //                           row
+  //                           value={gender}
+  //                           onChange={handleGender}
+  //                         >
+  //                           <FormControlLabel value="male" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Male" labelPlacement="bottom" sx={{ width:"11%" }}/>
+  //                           <FormControlLabel value="female" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Female" labelPlacement="bottom" sx={{ width:"11%" }}/>
+  //                           <FormControlLabel value="none" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="None" labelPlacement="bottom" sx={{ width:"11%" }}/>
+  //                         </RadioGroup>
+  //                       </FormControl>
 
-                      <div className="gridSubtitle">
-                        Dosage:
-                      </div>
-                      <input
-                        className="gridInputText"
-                        value={newarticle["qa"]["dosage"]}
-                        onChange={setNewDosage}
-                      />
+  //                     <div className="gridSubtitle">
+  //                       Dosage:
+  //                     </div>
+  //                     <input
+  //                       className="gridInputText"
+  //                       value={newarticle["qa"]["dosage"]}
+  //                       onChange={setNewDosage}
+  //                     />
 
-                      <div className="gridSubtitle">
-                        Effects of Coffee:
-                      </div>
-                      <List>
-                        {renderEffect}
-                        <ListItem>
-                          <ListItemAvatar>
-                            <IconButton onClick = {addEffect}>
-                              <AddIcon/>
-                            </IconButton>
-                          </ListItemAvatar>
-                          <ListItemText
-                            sx={{ color: "black", pt:"2px" }}
-                            primary="Add Effects by Yourself!"
-                          />
-                        </ListItem>
-                      </List>
+  //                     <div className="gridSubtitle">
+  //                       Effects of Coffee:
+  //                     </div>
+  //                     <List>
+  //                       {renderEffect}
+  //                       <ListItem>
+  //                         <ListItemAvatar>
+  //                           <IconButton onClick = {addEffect}>
+  //                             <AddIcon/>
+  //                           </IconButton>
+  //                         </ListItemAvatar>
+  //                         <ListItemText
+  //                           sx={{ color: "black", pt:"2px" }}
+  //                           primary="Add Effects by Yourself!"
+  //                         />
+  //                       </ListItem>
+  //                     </List>
 
-                    </AccordionDetails>
-                </Accordion>
-                <ThemeProvider theme={theme}>
-                  <Button color="neutral" variant="outlined" endIcon={<SendIcon />} sx={{ mt:"10px", width: "180px", padding:"8px", fontSize:"13pt" }} onClick={onSubmit}>
-                    Submit
-                  </Button>
-                </ThemeProvider>
-              </div>
-            </Grid>
-            <Grid item xs={7}>
-              <div className="gridRight">
-                <div className="Title">
-                  {newarticle["article"]["title"]}
-                </div>
-                <div className="Author">
-                  {newarticle["article"]["authors"]}
-                </div>
-                <div className='Date'>
-                  {newarticle["article"]["publish_date"]}
-                </div>
+  //                   </AccordionDetails>
+  //               </Accordion>
+  //               <ThemeProvider theme={theme}>
+  //                 <Button color="neutral" variant="outlined" endIcon={<SendIcon />} sx={{ mt:"10px", width: "180px", padding:"8px", fontSize:"13pt" }} onClick={onSubmit}>
+  //                   Submit
+  //                 </Button>
+  //               </ThemeProvider>
+  //             </div>
+  //           </Grid>
+  //           <Grid item xs={7}>
+  //             <div className="gridRight">
+  //               <div className="Title">
+  //                 {newarticle["article"]["title"]}
+  //               </div>
+  //               <div className="Author">
+  //                 {newarticle["article"]["authors"]}
+  //               </div>
+  //               <div className='Date'>
+  //                 {newarticle["article"]["publish_date"]}
+  //               </div>
 
-                <img src={newarticle["article"]["image"]} alt = "new_img" className = "Image" />
+  //               <img src={newarticle["article"]["image"]} alt = "new_img" className = "Image" />
 
-                <div className='News'>
-                  {newarticle["article"]["text"]}
-                </div>
-              </div>
-            </Grid>
-          </Grid>
-        </Box>
-      )
-    }
-    else {
-      return(
-        <Box sx={style2}>
-          <div className="loadlabel2">
-            Cannot get article from the link. Please try other article.
-          </div>
-        </Box>
-      )
-    }
-  }
+  //               <div className='News'>
+  //                 {newarticle["article"]["text"]}
+  //               </div>
+  //             </div>
+  //           </Grid>
+  //         </Grid>
+  //       </Box>
+  //     )
+  //   }
+  //   else {
+  //     return(
+  //       <Box sx={style2}>
+  //         <div className="loadlabel2">
+  //           Cannot get article from the link. Please try other article.
+  //         </div>
+  //       </Box>
+  //     )
+  //   }
+  // }
 
   return (
     <div className="total">
       <div className="Navbar">
         <img src="/logo.png" alt="logo" className="Logo"/>
-        <Button variant="outlined" sx={{ ml: "73%", mt:"15px", width: "200px", padding: "10px", height: "50px", position:"absolute"}} onClick={props.handleNext}>Move to Next Stage</Button>
       </div>
       <div className="Body">
-        <div className="Main">
-          <div className='Title'>
-            {article["title"]}
-          </div>
-
-          <div className='Author'>
-            {article["author"]}
-          </div>
-
-          <div className='Date'>
-            {article["publish_date"]}
-          </div>
-
-          <img src={article["image"]} alt = "main_img" className = "Image" />
-
-          <div className='News'>
-            {article["text"]}
-          </div>
-
+        <div className="recommendMain">
           <div className='graph_heading'>
-            Recommended
+            Recommended Articles to Read 
+            <IconButton aria-label="help" sx ={{ ml:"10px", mb:"3px" }}>
+              <HelpOutlineIcon sx={{ fontSize: 30  }}/>
+            </IconButton>
           </div>
           <br/>
-          <div className="sliderlabel">
-            Try Filtering With
-          </div>
-          <FormControl sx={{ width: "150px", ml:"1.5%" }}>
-            <Select
-              id="demo-simple-select"
-              value={filter}
-              onChange={handlefilter}
-            >
-              <MenuItem value={"age"}>Age</MenuItem>
-              <MenuItem value={"gender"}>Gender</MenuItem>
-            </Select>
-          </FormControl>
-          
-          {filter === "age" ? 
-            <Slider
-              aria-label="Age Group"
-              value={slider}
-              onChange={handleSlider}
-              step={10}
-              min={10}
-              max={40}
-              marks={marks}
-              sx = {{ width: "90%", ml: "5%", mt: "20px" }}
-            /> 
-            : 
-            <>
-              <br/>
-              <ToggleButtonGroup
-                color="primary"
-                value={genderselect}
-                exclusive
-                onChange={handlegenderselect}
-                sx = {{ ml: "1.5%", mt: "10px" }}
-              >
-                <ToggleButton value="general" sx = {{ width: "100px" }}>General</ToggleButton>
-                <ToggleButton value="male" sx = {{ width: "100px" }}>Male</ToggleButton>
-                <ToggleButton value="female" sx = {{ width: "100px" }}>Female</ToggleButton>
-              </ToggleButtonGroup>
-            </>  
-          }
-        
-          <div className='Graph'>
-            {
-              myData.length === 0 ? (<div></div>) : (
-                <VictoryScatter
-                  containerComponent={
-                    <VictoryVoronoiContainer
-                      labels={() => " "}
-                      labelComponent={
-                        <VictoryTooltip flyoutComponent={<VictoryCustomTooltip />} />
-                      }
-                    />
+
+          <Box>
+            <Grid container spacing={0} sx={{width: "100%"}}>
+              <Grid item xs={4}>
+                <div className="sliderlabel">
+                    Try Filtering the Articles With
+                  </div>
+                  <FormControl sx={{ width: "150px", ml:"1.5%" }}>
+                    <Select
+                      id="demo-simple-select"
+                      value={filter}
+                      onChange={handlefilter}
+                    >
+                      <MenuItem value={"age"}>Age</MenuItem>
+                      <MenuItem value={"gender"}>Gender</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {filter === "age" ? 
+                    <Slider
+                      aria-label="Age Group"
+                      value={slider}
+                      onChange={handleSlider}
+                      step={10}
+                      min={10}
+                      max={40}
+                      marks={marks}
+                      sx = {{ width: "90%", ml: "5%", mt: "20px" }}
+                    /> 
+                    : 
+                    <>
+                      <br/>
+                      <ToggleButtonGroup
+                        color="primary"
+                        value={genderselect}
+                        exclusive
+                        onChange={handlegenderselect}
+                        sx = {{ ml: "1.5%", mt: "10px" }}
+                      >
+                        <ToggleButton value="general" sx = {{ width: "100px" }}>General</ToggleButton>
+                        <ToggleButton value="male" sx = {{ width: "100px" }}>Male</ToggleButton>
+                        <ToggleButton value="female" sx = {{ width: "100px" }}>Female</ToggleButton>
+                      </ToggleButtonGroup>
+                    </>  
                   }
-                  height={330}
-                  bubbleProperty="amount"
-                  size={({ active }) => active ? 14 : 11}
-                  data={myData}
-                  style={{
-                    data: {
-                      fill: ({ datum }) => datum.fill,
-                      stroke: ({ datum }) => datum.stroke,
-                      strokeWidth: 4
-                    }                    
-                  }}
-                  events={[
-                    {
-                      target: "data",
-                      eventHandlers: {
-                        onClick: (e, props) => {
-                          const json = props.data[props.index]["data"]["article"]
-                          setArticle({title: json["title"], author: json["authors"], publish_date: json["publish_date"], image: json["image"], text: json["text"]})
-                          window.scrollTo(0, 0)
-                        },
-                        onMouseOver: () => {
-                          document.body.style.cursor = 'cursorurl';
-                        },
+                  <div className="pie">
+                    <VictoryPie
+                      innerRadius={100}
+                      width={550}
+                      colorScale={["#5DADEC", "#CE5757", "#B4B4B4" ]}
+                      style={{
+                        labels: {
+                          fontSize: 25
+                        }
+                      }}
+                      data={pie}
+                      labels={({ datum }) => (datum.y === 0 ? "" : datum.x)}
+                    />
+                  </div>
+                </Grid>
+              <Grid item xs={8}>
+                <div className="axisLabel">
+                  Dosage
+                </div>
+                <img src="/sentiment.png" alt="legend" className="Legend"/>
+                {
+                  myData.length === 0 ? (<div></div>) : (
+                    <VictoryChart 
+                      domain={{ y:[-55, -8], x:[0, 6] }} 
+                      height={350} 
+                      width={400}
+                      containerComponent = {
+                        <VictoryVoronoiContainer
+                          labels={() => " "}
+                          labelComponent={
+                            <VictoryTooltip flyoutComponent={<VictoryCustomTooltip />} />
+                          }
+                        />
                       }
-                    }
-                  ]}
-                />
-              )
-            }                       
-          </div>
-          <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>
+                      theme={VictoryTheme.material}
+                    >
+                      <VictoryAxis
+                        tickValues={[1, 2, 3, 4, 5]}
+                        tickFormat={["1 Cup", "2 Cups", "3 Cups", "4 Cups", "5 Cups"]}
+                        x={10} 
+                        style={{ grid: {stroke: "grey"}, tickLabels: { fontSize: 9 } }}
+                      />
+                      <VictoryScatter
+                        bubbleProperty="amount"
+                        size={({ active }) => active ? 10 : 7}
+                        data={myData}
+                        style={{
+                          data: {
+                            fill: ({ datum }) => datum.fill,
+                            stroke: ({ datum }) => datum.stroke,
+                            strokeWidth: 4
+                          }                    
+                        }}
+                        events={[
+                          {
+                            target: "data",
+                            eventHandlers: {
+                              onClick: (e, props) => {
+                                const json = props.data[props.index]["data"]["article"]
+                                setArticle({title: json["title"], author: json["authors"], publish_date: json["publish_date"], image: json["image"], text: json["text"]})
+                                openView()
+                              },
+                              onMouseOver: () => {
+                                document.body.style.cursor = 'cursorurl';
+                              },
+                            }
+                          }
+                        ]}
+                      />
+                    </VictoryChart>
+                  )
+                }                       
+              </Grid>
+            </Grid>
+          </Box>
+          {/* <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>
             Please recommend some news by yourself!
-          </Button>
+          </Button> */}
+          <br/>
+          <Button variant="outlined" sx={{ mt:"-50px", width: "300px", fontSize:"12pt" }} onClick={props.handleNext}>Move to the Next Stage</Button>
           <br/>
           <br/>
         </div>
         <br/>
         <br/>
       </div>
-      <Modal
+      {/* <Modal
         open={open}
         onClose={handleClose}
       >
         <span>
           {renderModal()}
         </span>
+      </Modal> */}
+      <Modal
+        open={view}
+        onClose={handleCloseView}
+      >
+        <Box sx={style4}>
+          <div className="viewArticle">
+            <div className='Title'>
+              {article["title"]}
+            </div>
+
+            <div className='Author'>
+              {article["author"]}
+            </div>
+
+            <div className='Date'>
+              {article["publish_date"]}
+            </div>
+
+            <img src={article["image"]} alt = "main_img" className = "Image2" />
+
+            <div className='News'>
+              {article["text"]}
+            </div>
+          </div>
+          <IconButton aria-label="close" onClick={handleCloseView} sx={{ position:"absolute", top:5, right:5, }}>
+            <CloseIcon sx={{ fontSize: 40 }}  />
+          </IconButton>
+        </Box>
       </Modal>
     </div>
     

@@ -24,8 +24,8 @@ function Presurvey(props) {
     }
 
     const btnstyle= {
-        left: "40%",
-        width: "25%",
+        ml: "17%",
+        width: "60%",
         bottom: "10%",
         fontSize: "13pt",
         mt: "20px",
@@ -33,8 +33,14 @@ function Presurvey(props) {
     }
 
     const onSubmit = () => {
-        db.ref('/' + props.mturk + '/presurvey/').push({ amount: cup, coffee: coffee, health: health })
-        props.handleNext()
+        if (cup === "" || coffee === "" || health === ""){
+            alert("Please fill in all the survey items")
+        }
+        else{
+            db.ref('/' + props.mturk + '/presurvey/').push({ amount: cup, coffee: coffee, health: health })
+            props.handleInit(coffee)
+            props.handleNext()
+        }
     }
 
 
@@ -61,7 +67,7 @@ function Presurvey(props) {
                     <div className="surveyQuestion">
                         2. How much coffee do you drink a day?
                     </div>
-                    <FormControl sx={{ mt:"15px", width:"100%", mb:"15px" }}>
+                    <FormControl sx={{ width:"100%", mb:"25px" }}>
                         <RadioGroup
                         aria-labelledby="radio-buttons-group-label"
                         name="radio-buttons-group"
@@ -69,16 +75,16 @@ function Presurvey(props) {
                         value={cup}
                         onChange={handlecup}
                         >
-                        <FormControlLabel value="1" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="1 or less cup a day" labelPlacement="bottom" sx={{ width:"20%" }}/>
-                        <FormControlLabel value="2" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="2 cups" labelPlacement="bottom" sx={{ width:"20%" }}/>
-                        <FormControlLabel value="3" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="3 cups" labelPlacement="bottom" sx={{ width:"20%" }}/>
-                        <FormControlLabel value="4" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="4 cups or more" labelPlacement="bottom" sx={{ width:"20%" }}/>
+                        <FormControlLabel value="1" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="1 cup or less" labelPlacement="bottom" sx={{ width:"15%" }}/>
+                        <FormControlLabel value="2" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="2 cups" labelPlacement="bottom" sx={{ width:"15%" }}/>
+                        <FormControlLabel value="3" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="3 cups" labelPlacement="bottom" sx={{ width:"15%" }}/>
+                        <FormControlLabel value="4" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="4 cups or more" labelPlacement="bottom" sx={{ width:"15%", textAlign:"center" }}/>
                         </RadioGroup>
                     </FormControl>
                     <div className="surveyQuestion">
                         3. Do you think coffee is good for your health? 
                     </div>
-                    <FormControl sx={{ mt:"15px", width:"100%", mb:"15px" }}>
+                    <FormControl sx={{ width:"100%", mb:"25px" }}>
                         <RadioGroup
                         aria-labelledby="radio-buttons-group-label"
                         name="radio-buttons-group"
@@ -96,7 +102,7 @@ function Presurvey(props) {
                     <div className="surveyQuestion">
                         4. How often do you read health related news?
                     </div>
-                    <FormControl sx={{ mt:"15px", width:"100%", mb:"15px" }}>
+                    <FormControl sx={{ width:"100%", mb:"25px" }}>
                         <RadioGroup
                         aria-labelledby="radio-buttons-group-label"
                         name="radio-buttons-group"
@@ -104,14 +110,13 @@ function Presurvey(props) {
                         value={health}
                         onChange={handleHealth}
                         >
-                        <FormControlLabel value="1" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Not Very Often" labelPlacement="bottom" sx={{ width:"15%" }}/>
-                        <FormControlLabel value="2" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="" labelPlacement="bottom" sx={{ width:"15%" }}/>
-                        <FormControlLabel value="3" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Average" labelPlacement="bottom" sx={{ width:"15%" }}/>
-                        <FormControlLabel value="4" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="" labelPlacement="bottom" sx={{ width:"15%" }}/>
-                        <FormControlLabel value="4" control={<Radio sx={{ ml: "auto", mr: "auto" }}/>} label="Very Often" labelPlacement="bottom" sx={{ width:"15%" }}/>
+                        <FormControlLabel value="1" control={<Radio/>} label="Almost Never" labelPlacement="bottom" sx={{ width:"15%" }}/>
+                        <FormControlLabel value="2" control={<Radio/>} label="Once a Week" labelPlacement="bottom" sx={{ width:"15%" }}/>
+                        <FormControlLabel value="3" control={<Radio/>} label="Once a day" labelPlacement="bottom" sx={{ width:"15%" }}/>
+                        <FormControlLabel value="4" control={<Radio/>} label="More than Twice a Day" labelPlacement="bottom" sx={{ width:"15%", textAlign:"center" }}/>
                         </RadioGroup>
                     </FormControl>
-                    <Button variant="outlined" sx={btnstyle} onClick={onSubmit}>Submit</Button>
+                    <Button variant="outlined" sx={btnstyle} onClick={onSubmit}>Click to Proceed and Read an Article</Button>
                 </div>
                 <br/>
                 <br/>

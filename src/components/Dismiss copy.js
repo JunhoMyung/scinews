@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import TextField from '@mui/material/TextField';
 
-function Dismiss(props) {
+function Instruction(props) {
     return (
-        <div className="total">
+        <div>
             <div className="Navbar">
                 <img src="/logo.png" alt="logo" className="Logo"/>
             </div>
@@ -22,4 +23,4 @@ function Dismiss(props) {
 }
 
 
-export default Dismiss;
+export default Instruction;
