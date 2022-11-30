@@ -281,7 +281,7 @@ path{
 .recommendMain {
   width: 84%;
   margin-top: 20px;
-  margin-left: 5%;
+  margin-left: 6%;
   padding-left: 2%;
   margin-right: 10%;
   padding-right: 2%;
@@ -317,4 +317,9 @@ path{
   margin-top: 30px;
   width: 90%;
   margin-left: 5%;
+}
+.Tutorial{
+  margin-top: 60px;
+  font-size: 14pt;
+  line-height: 1.7;
 }

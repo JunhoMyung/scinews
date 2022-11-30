@@ -46,6 +46,11 @@ function Main(props) {
   const [genderselect, setgenderselect] = useState('general');
   const [filter, setFilter] = useState('age');
   const [pie, setPie] = useState([{x: "Positive", y: 13}, {x: "Negative", y: 8}, , {x: "Neutral", y: 20}])
+  const [tutorial, setTutorial] = useState(false)
+  const openTutorial = () => setTutorial(true);
+  const handleTutorial = () => {
+    setTutorial(false)
+  }
 
   const handlefilter = (event) => {
     setFilter(event.target.value)
@@ -296,6 +301,20 @@ function Main(props) {
     p: 4,
   };
 
+  const style5 = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '40%',
+    height: '60%',
+    bgcolor: 'background.paper',
+    border: '1px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+
+
   const btnstyle= {
     position: "absolute",
     left: "40%",
@@ -406,7 +425,7 @@ function Main(props) {
         }
       }
       setmyData(temp)
-      setPie([{x: "Positive", y: positive}, {x: "Negative", y: negative}, , {x: "Neutral", y: neutral}])
+      setPie([{x: "Positive", y: positive}, {x: "Negative", y: negative}, {x: "Neutral", y: neutral}])
     })
   }
 
@@ -892,7 +911,7 @@ function Main(props) {
         <div className="recommendMain">
           <div className='graph_heading'>
             Recommended Articles to Read 
-            <IconButton aria-label="help" sx ={{ ml:"10px", mb:"3px" }}>
+            <IconButton aria-label="help" sx ={{ ml:"10px", mb:"3px" }} onClick={openTutorial}>
               <HelpOutlineIcon sx={{ fontSize: 30  }}/>
             </IconButton>
           </div>
@@ -1060,6 +1079,34 @@ function Main(props) {
             </div>
           </div>
           <IconButton aria-label="close" onClick={handleCloseView} sx={{ position:"absolute", top:5, right:5, }}>
+            <CloseIcon sx={{ fontSize: 40 }}  />
+          </IconButton>
+        </Box>
+      </Modal>
+      <Modal
+        open={tutorial}
+        onClose={handleTutorial}
+      >
+        <Box sx={style5}>
+          <div className='Title'>
+            Tutorial
+          </div>
+          <div className="Tutorial">
+            Each nodes in the graph represents one article related to "Coffee". 
+            <br/>
+            <br/>
+            Hover on the nodes to check the summary of the article, and click on them to view the full article!
+            <br/>
+            <br/>
+            The x-axis of the graph represents the effective dosage of "Coffee".
+            <br/>
+            <br/>
+            Color of each nodes represent the sentiment of the article. Please keep these information in mind when using our system!
+            <br/>
+            <br/>
+            Thank you again for your participation!
+          </div>
+          <IconButton aria-label="close" onClick={handleTutorial} sx={{ position:"absolute", top:20, right:20, }}>
             <CloseIcon sx={{ fontSize: 40 }}  />
           </IconButton>
         </Box>
